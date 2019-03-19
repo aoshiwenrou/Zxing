@@ -6,7 +6,6 @@
       <module fileurl="file://$PROJECT_DIR$/alwaysnbScan/alwaysnbScan.iml" filepath="$PROJECT_DIR$/alwaysnbScan/alwaysnbScan.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/zxingCore/zxingCore.iml" filepath="$PROJECT_DIR$/zxingCore/zxingCore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/zxingLib/zxingLib.iml" filepath="$PROJECT_DIR$/zxingLib/zxingLib.iml" />
     </modules>
   </component>
 </project>

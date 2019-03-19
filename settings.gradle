@@ -1,1 +1,1 @@
-include ':app', ':zxingCore', ':zxingLib', ':alwaysnbScan'
+include ':app', ':zxingCore', ':alwaysnbScan'

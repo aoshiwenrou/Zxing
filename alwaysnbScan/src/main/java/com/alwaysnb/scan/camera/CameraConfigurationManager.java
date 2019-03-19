@@ -29,7 +29,6 @@ import android.view.WindowManager;
 import com.alwaysnb.scan.FuncSwitcher;
 import com.alwaysnb.scan.camera.open.CameraFacing;
 import com.alwaysnb.scan.camera.open.OpenCamera;
-import com.google.zxing.client.android.camera.CameraConfigurationUtils;
 
 /**
  * A class which deals with reading, parsing, and setting the camera parameters which are used to

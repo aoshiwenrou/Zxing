@@ -21,5 +21,6 @@ android {
 }
 
 dependencies {
-    api project(':zxingCore')
+    api fileTree(include: ['*.jar'], dir: 'libs')
+//    api project(':zxingCore')
 }
