@@ -44,7 +44,7 @@ public class FuncSwitcher {
     /**
      * 不持续对焦，使用标准对焦模式
      */
-    public static final boolean DISABLE_CONTINUOUS_FOCUS = true;
+    public static final boolean DISABLE_CONTINUOUS_FOCUS = false;
     /**
      * 反色：扫描黑色背景上的白色条码，仅适用于部分设备
      */

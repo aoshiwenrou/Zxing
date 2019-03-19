@@ -20,5 +20,4 @@
   <item type="id" name="decode_succeeded"/>
   <item type="id" name="quit"/>
   <item type="id" name="restart_preview"/>
-  <item type="id" name="return_scan_result"/>
 </resources>

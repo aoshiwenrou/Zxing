@@ -18,10 +18,8 @@ package com.alwaysnb.scan;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -29,16 +27,14 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.alwaysnb.scan.camera.CameraManager;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.DecodeHintType;
+import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Map;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -48,14 +44,9 @@ import java.util.Map;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public class CaptureActivity extends Activity implements SurfaceHolder.Callback {
+public class CaptureActivity extends Activity implements SurfaceHolder.Callback, DecodeEventCallback {
 
     private static final String TAG = CaptureActivity.class.getSimpleName();
-
-    private static final long DEFAULT_INTENT_RESULT_DURATION_MS = 1500L;
-    private static final long BULK_MODE_SCAN_DELAY_MS = 1000L;
-
-    private static final String[] ZXING_URLS = {"http://zxing.appspot.com/scan", "zxing://scan/"};
 
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
@@ -63,22 +54,9 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
     private ViewfinderView viewfinderView;
     private boolean hasSurface;
     private Collection<BarcodeFormat> decodeFormats;
-    private Map<DecodeHintType, ?> decodeHints;
     private String characterSet;
     private InactivityTimer inactivityTimer;
     private BeepManager beepManager;
-
-    ViewfinderView getViewfinderView() {
-        return viewfinderView;
-    }
-
-    public Handler getHandler() {
-        return handler;
-    }
-
-    CameraManager getCameraManager() {
-        return cameraManager;
-    }
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -218,7 +196,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
             cameraManager.openDriver(surfaceHolder);
             // Creating the handler starts the preview, which can also throw a RuntimeException.
             if (handler == null) {
-                handler = new CaptureActivityHandler(this, decodeFormats, decodeHints, characterSet, cameraManager);
+                handler = new CaptureActivityHandler(this, decodeFormats, null, characterSet, cameraManager);
             }
             decodeOrStoreSavedBitmap(null, null);
         } catch (IOException ioe) {
@@ -252,7 +230,18 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback 
         viewfinderView.setVisibility(View.VISIBLE);
     }
 
-    public void drawViewfinder() {
-        viewfinderView.drawViewfinder();
+    @Override
+    public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
+        return cameraManager.buildLuminanceSource(data, width, height);
+    }
+
+    @Override
+    public ViewfinderView getViewfinderView() {
+        return viewfinderView;
+    }
+
+    @Override
+    public void onDecodeSuccess(Result rawResult, Bitmap barcode, float scaleFactor) {
+        handleDecode(rawResult, barcode, scaleFactor);
     }
 }

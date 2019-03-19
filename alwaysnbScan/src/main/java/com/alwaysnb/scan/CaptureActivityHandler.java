@@ -16,8 +16,6 @@
 
 package com.alwaysnb.scan;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -27,6 +25,7 @@ import android.os.Message;
 import com.alwaysnb.scan.camera.CameraManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
+import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
 
 import java.util.Collection;
@@ -37,14 +36,32 @@ import java.util.Map;
  *
  * @author dswitkin@google.com (Daniel Switkin)
  */
-public final class CaptureActivityHandler extends Handler {
+public final class CaptureActivityHandler extends Handler implements DecodeHandler.DecodeCallback {
 
     private static final String TAG = CaptureActivityHandler.class.getSimpleName();
 
-    private final CaptureActivity activity;
+    private final DecodeEventCallback decodeEventCallback;
     private final DecodeThread decodeThread;
     private State state;
     private final CameraManager cameraManager;
+
+    @Override
+    public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
+        return decodeEventCallback.buildLuminanceSource(data, width, height);
+    }
+
+    @Override
+    public void onDecodeSuccess(Result result, Bundle bundle) {
+        Message message = Message.obtain(this, R.id.decode_succeeded, result);
+        message.setData(bundle);
+        message.sendToTarget();
+    }
+
+    @Override
+    public void onDecodeFail() {
+        Message message = Message.obtain(this, R.id.decode_failed);
+        message.sendToTarget();
+    }
 
     private enum State {
         PREVIEW,
@@ -52,14 +69,14 @@ public final class CaptureActivityHandler extends Handler {
         DONE
     }
 
-    CaptureActivityHandler(CaptureActivity activity,
+    CaptureActivityHandler(DecodeEventCallback decodeEventCallback,
                            Collection<BarcodeFormat> decodeFormats,
                            Map<DecodeHintType, ?> baseHints,
                            String characterSet,
                            CameraManager cameraManager) {
-        this.activity = activity;
-        decodeThread = new DecodeThread(activity, decodeFormats, baseHints, characterSet,
-                new ViewfinderResultPointCallback(activity.getViewfinderView()));
+        this.decodeEventCallback = decodeEventCallback;
+        decodeThread = new DecodeThread(decodeFormats, baseHints, characterSet,
+                new ViewfinderResultPointCallback(decodeEventCallback.getViewfinderView()), this);
         decodeThread.start();
         state = State.SUCCESS;
 
@@ -89,16 +106,12 @@ public final class CaptureActivityHandler extends Handler {
                     }
                     scaleFactor = bundle.getFloat(DecodeThread.BARCODE_SCALED_FACTOR);
                 }
-                activity.handleDecode((Result) message.obj, barcode, scaleFactor);
+                decodeEventCallback.onDecodeSuccess((Result) message.obj, barcode, scaleFactor);
                 break;
             case R.id.decode_failed:
                 // We're decoding as fast as possible, so when one decode fails, start another.
                 state = State.PREVIEW;
                 cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
-                break;
-            case R.id.return_scan_result:
-                activity.setResult(Activity.RESULT_OK, (Intent) message.obj);
-                activity.finish();
                 break;
         }
     }
@@ -124,7 +137,7 @@ public final class CaptureActivityHandler extends Handler {
         if (state == State.SUCCESS) {
             state = State.PREVIEW;
             cameraManager.requestPreviewFrame(decodeThread.getHandler(), R.id.decode);
-            activity.drawViewfinder();
+            decodeEventCallback.getViewfinderView().drawViewfinder();
         }
     }
 

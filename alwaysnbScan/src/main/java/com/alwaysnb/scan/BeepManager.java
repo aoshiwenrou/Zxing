@@ -19,20 +19,18 @@ package com.alwaysnb.scan;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Vibrator;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.Closeable;
 import java.io.IOException;
 
 /**
- * Manages beeps and vibrations for {@link CaptureActivity}.
+ * Manages beeps and vibrations
  */
 @TargetApi(Build.VERSION_CODES.KITKAT)
 final class BeepManager implements MediaPlayer.OnErrorListener, Closeable {

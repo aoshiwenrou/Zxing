@@ -39,18 +39,18 @@ final class DecodeThread extends Thread {
     public static final String BARCODE_BITMAP = "barcode_bitmap";
     public static final String BARCODE_SCALED_FACTOR = "barcode_scaled_factor";
 
-    private final CaptureActivity activity;
+    private final DecodeHandler.DecodeCallback decodeCallback;
     private final Map<DecodeHintType, Object> hints;
     private Handler handler;
     private final CountDownLatch handlerInitLatch;
 
-    DecodeThread(CaptureActivity activity,
-                 Collection<BarcodeFormat> decodeFormats,
-                 Map<DecodeHintType, ?> baseHints,
-                 String characterSet,
-                 ResultPointCallback resultPointCallback) {
+    DecodeThread(Collection<BarcodeFormat> decodeFormats,
+            Map<DecodeHintType, ?> baseHints,
+            String characterSet,
+            ResultPointCallback resultPointCallback,
+            DecodeHandler.DecodeCallback decodeCallback) {
 
-        this.activity = activity;
+        this.decodeCallback = decodeCallback;
         handlerInitLatch = new CountDownLatch(1);
 
         hints = new EnumMap<>(DecodeHintType.class);
@@ -100,7 +100,7 @@ final class DecodeThread extends Thread {
     @Override
     public void run() {
         Looper.prepare();
-        handler = new DecodeHandler(activity, hints);
+        handler = new DecodeHandler(decodeCallback, hints);
         handlerInitLatch.countDown();
         Looper.loop();
     }
