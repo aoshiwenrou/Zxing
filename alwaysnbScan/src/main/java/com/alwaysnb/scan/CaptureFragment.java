@@ -16,15 +16,17 @@
 
 package com.alwaysnb.scan;
 
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -45,9 +47,9 @@ import java.util.Collection;
  * @author dswitkin@google.com (Daniel Switkin)
  * @author Sean Owen
  */
-public class CaptureActivity extends Activity implements SurfaceHolder.Callback, DecodeEventCallback {
+public class CaptureFragment extends Fragment implements SurfaceHolder.Callback, DecodeEventCallback {
 
-    private static final String TAG = CaptureActivity.class.getSimpleName();
+    private static final String TAG = CaptureFragment.class.getSimpleName();
 
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
@@ -60,29 +62,36 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     private BeepManager beepManager;
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
-        Window window = getWindow();
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Window window = getActivity().getWindow();
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        setContentView(R.layout.activity_capture);
-
-        hasSurface = false;
-        inactivityTimer = new InactivityTimer(this);
-        beepManager = new BeepManager(this);
     }
 
     @Override
-    protected void onResume() {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragement_capture, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        hasSurface = false;
+        inactivityTimer = new InactivityTimer(getActivity());
+        beepManager = new BeepManager(getActivity());
+    }
+
+    @Override
+    public void onResume() {
         super.onResume();
 
         // CameraManager must be initialized here, not in onCreate(). This is necessary because we don't
         // want to open the camera driver and measure the screen size if we're going to show the help on
         // first launch. That led to bugs where the scanning rectangle was the wrong size and partially
         // off screen.
-        cameraManager = new CameraManager(getApplication());
+        cameraManager = new CameraManager(getActivity().getApplication());
 
-        viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
+        viewfinderView = (ViewfinderView) getView().findViewById(R.id.viewfinder_view);
         viewfinderView.setCameraManager(cameraManager);
 
         handler = null;
@@ -96,7 +105,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         decodeFormats = null;
         characterSet = null;
 
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.preview_view);
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
             // The activity was paused but not stopped, so the surface still exists. Therefore
@@ -109,7 +118,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         if (handler != null) {
             handler.quitSynchronously();
             handler = null;
@@ -119,7 +128,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         cameraManager.closeDriver();
         //historyManager = null; // Keep for onActivityResult
         if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+            SurfaceView surfaceView = (SurfaceView) getView().findViewById(R.id.preview_view);
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
@@ -127,7 +136,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     }
 
     @Override
-    protected void onDestroy() {
+    public void onDestroy() {
         inactivityTimer.shutdown();
         super.onDestroy();
     }
@@ -180,9 +189,9 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         inactivityTimer.onActivity();
         beepManager.playBeepSoundAndVibrate();
 
-        ScrollTextView stv = findViewById(R.id.stv);
+        ScrollTextView stv = getView().findViewById(R.id.stv);
         if (stv == null) {
-            Toast.makeText(this, rawResult.getText(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), rawResult.getText(), Toast.LENGTH_SHORT).show();
         } else {
             stv.appendWithTime(rawResult.getText());
         }
@@ -217,11 +226,11 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
     }
 
     private void displayFrameworkBugMessageAndExit() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(getString(R.string.app_name));
         builder.setMessage(getString(R.string.msg_camera_framework_bug));
-        builder.setPositiveButton(R.string.button_ok, new FinishListener(this));
-        builder.setOnCancelListener(new FinishListener(this));
+        builder.setPositiveButton(R.string.button_ok, new FinishListener(getActivity()));
+        builder.setOnCancelListener(new FinishListener(getActivity()));
         builder.show();
     }
 
