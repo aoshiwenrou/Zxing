@@ -7,7 +7,8 @@
       <module fileurl="file://$PROJECT_DIR$/alwaysnbScan/alwaysnbScan.iml" filepath="$PROJECT_DIR$/alwaysnbScan/alwaysnbScan.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/jcking_m_scan/jcking_m_scan.iml" filepath="$PROJECT_DIR$/jcking_m_scan/jcking_m_scan.iml" />
+      <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jscan/jscan.iml" filepath="$PROJECT_DIR$/jscan/jscan.iml" />
       <module fileurl="file://$PROJECT_DIR$/zxingCore/zxingCore.iml" filepath="$PROJECT_DIR$/zxingCore/zxingCore.iml" />
       <module fileurl="file://$PROJECT_DIR$/zxingCore/zxingCore.iml" filepath="$PROJECT_DIR$/zxingCore/zxingCore.iml" />
     </modules>
