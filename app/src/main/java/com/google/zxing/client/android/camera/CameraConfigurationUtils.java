@@ -291,6 +291,7 @@ public final class CameraConfigurationUtils {
     }
 
     double screenAspectRatio = screenResolution.x / (double) screenResolution.y;
+    boolean isScreenPortrait = screenAspectRatio < 1;
 
     // Find a suitable size, with max resolution
     int maxResolution = 0;
@@ -304,8 +305,9 @@ public final class CameraConfigurationUtils {
       }
 
       boolean isCandidatePortrait = realWidth < realHeight;
-      int maybeFlippedWidth = isCandidatePortrait ? realHeight : realWidth;
-      int maybeFlippedHeight = isCandidatePortrait ? realWidth : realHeight;
+      boolean isSameToward = isScreenPortrait == isCandidatePortrait;
+      int maybeFlippedWidth = isSameToward ? realWidth : realHeight;
+      int maybeFlippedHeight = isSameToward ? realHeight : realWidth;
       double aspectRatio = maybeFlippedWidth / (double) maybeFlippedHeight;
       double distortion = Math.abs(aspectRatio - screenAspectRatio);
       if (distortion > MAX_ASPECT_DISTORTION) {
