@@ -224,10 +224,11 @@ public final class CameraManager {
 
             int width = findDesiredDimensionInRange(screenResolution.x, MIN_FRAME_WIDTH, MAX_FRAME_WIDTH);
             int height = findDesiredDimensionInRange(screenResolution.y, MIN_FRAME_HEIGHT, MAX_FRAME_HEIGHT);
+            int size = Math.min(width, height);
 
             int leftOffset = (screenResolution.x - width) / 2;
             int topOffset = (screenResolution.y - height) / 2;
-            framingRect = new Rect(leftOffset, topOffset, leftOffset + width, topOffset + height);
+            framingRect = new Rect(leftOffset, topOffset, leftOffset + size, topOffset + size);
             Log.d(TAG, "Calculated framing rect: " + framingRect);
         }
         return framingRect;
@@ -263,11 +264,31 @@ public final class CameraManager {
                 // Called early, before init even finished
                 return null;
             }
-            rect.left = rect.left * cameraResolution.x / screenResolution.x;
-            rect.right = rect.right * cameraResolution.x / screenResolution.x;
-            rect.top = rect.top * cameraResolution.y / screenResolution.y;
-            rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
-            framingRectInPreview = rect;
+            boolean isCameraPortrait = cameraResolution.x < cameraResolution.y;
+            boolean isScreenPortrait = screenResolution.x < screenResolution.y;
+            Rect result = new Rect();
+            if (isCameraPortrait != isScreenPortrait) {
+                //坐标转换，将向左横屏摄像头坐标转换为垂直屏幕时的坐标
+                screenResolution = new Point(screenResolution.y, screenResolution.x);
+                result.left = rect.left * cameraResolution.x / screenResolution.x;
+                result.right = rect.right * cameraResolution.x / screenResolution.x;
+                result.top = rect.top * cameraResolution.y / screenResolution.y;
+                result.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+
+                Rect rotate = new Rect();
+                rotate.left = result.top;
+                rotate.right = rotate.left + (result.bottom - result.top);
+                rotate.bottom = cameraResolution.y - result.left;
+                rotate.top = rotate.bottom - (result.right - result.left);
+                result = rotate;
+            } else {
+                result.left = rect.left * cameraResolution.x / screenResolution.x;
+                result.right = rect.right * cameraResolution.x / screenResolution.x;
+                result.top = rect.top * cameraResolution.y / screenResolution.y;
+                result.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+            }
+
+            framingRectInPreview = result;
         }
         return framingRectInPreview;
     }

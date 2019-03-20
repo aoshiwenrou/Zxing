@@ -75,8 +75,7 @@ public final class CaptureActivityHandler extends Handler implements DecodeHandl
                            String characterSet,
                            CameraManager cameraManager) {
         this.decodeEventCallback = decodeEventCallback;
-        decodeThread = new DecodeThread(decodeFormats, baseHints, characterSet,
-                new ViewfinderResultPointCallback(decodeEventCallback.getViewfinderView()), this);
+        decodeThread = new DecodeThread(decodeFormats, baseHints, characterSet, this);
         decodeThread.start();
         state = State.SUCCESS;
 

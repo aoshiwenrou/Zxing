@@ -47,7 +47,6 @@ final class DecodeThread extends Thread {
     DecodeThread(Collection<BarcodeFormat> decodeFormats,
             Map<DecodeHintType, ?> baseHints,
             String characterSet,
-            ResultPointCallback resultPointCallback,
             DecodeHandler.DecodeCallback decodeCallback) {
 
         this.decodeCallback = decodeCallback;
@@ -85,7 +84,7 @@ final class DecodeThread extends Thread {
         if (characterSet != null) {
             hints.put(DecodeHintType.CHARACTER_SET, characterSet);
         }
-        hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, resultPointCallback);
+//        hints.put(DecodeHintType.NEED_RESULT_POINT_CALLBACK, resultPointCallback);
     }
 
     Handler getHandler() {
