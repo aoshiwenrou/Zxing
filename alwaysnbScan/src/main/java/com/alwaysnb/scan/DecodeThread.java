@@ -21,7 +21,6 @@ import android.os.Looper;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
-import com.google.zxing.ResultPointCallback;
 
 import java.util.Collection;
 import java.util.EnumMap;
@@ -61,22 +60,22 @@ final class DecodeThread extends Thread {
         if (decodeFormats == null || decodeFormats.isEmpty()) {
             decodeFormats = EnumSet.noneOf(BarcodeFormat.class);
             //一维码：商品
-            if (FuncSwitcher.DECODE_1D_PRODUCT)
+            if (CaptureSwitcher.get().isDecode1dProduct())
                 decodeFormats.addAll(DecodeFormatManager.PRODUCT_FORMATS);
             //一维码：工业
-            if (FuncSwitcher.DECODE_1D_INDUSTRIAL)
+            if (CaptureSwitcher.get().isDecode1dIndustrial())
                 decodeFormats.addAll(DecodeFormatManager.INDUSTRIAL_FORMATS);
             //二维码
-            if (FuncSwitcher.DECODE_QR)
+            if (CaptureSwitcher.get().isDecodeQr())
                 decodeFormats.addAll(DecodeFormatManager.QR_CODE_FORMATS);
             //Data Matrix
-            if (FuncSwitcher.DECODE_DATA_MATRIX)
+            if (CaptureSwitcher.get().isDecodeDataMatrix())
                 decodeFormats.addAll(DecodeFormatManager.DATA_MATRIX_FORMATS);
             //Aztec
-            if (FuncSwitcher.DECODE_AZTEC)
+            if (CaptureSwitcher.get().isDecodeAztec())
                 decodeFormats.addAll(DecodeFormatManager.AZTEC_FORMATS);
             //PDF417(测试)
-            if (FuncSwitcher.DECODE_PDF417)
+            if (CaptureSwitcher.get().isDecodePdf417())
                 decodeFormats.addAll(DecodeFormatManager.PDF417_FORMATS);
         }
         hints.put(DecodeHintType.POSSIBLE_FORMATS, decodeFormats);

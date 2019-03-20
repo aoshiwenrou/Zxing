@@ -53,7 +53,7 @@ final class BeepManager implements MediaPlayer.OnErrorListener, Closeable {
 
     synchronized void updatePrefs() {
         playBeep = shouldBeep(activity);
-        vibrate = FuncSwitcher.VIBRATE;
+        vibrate = CaptureSwitcher.get().isVibrate();
         if (playBeep && mediaPlayer == null) {
             // The volume on STREAM_SYSTEM is not adjustable, and users found it too loud,
             // so we now play on the music stream.
@@ -73,7 +73,7 @@ final class BeepManager implements MediaPlayer.OnErrorListener, Closeable {
     }
 
     private static boolean shouldBeep(Context activity) {
-        boolean shouldPlayBeep = FuncSwitcher.PLAY_BEEP;
+        boolean shouldPlayBeep = CaptureSwitcher.get().isPlayBeep();
         if (shouldPlayBeep) {
             // See if sound settings overrides this
             AudioManager audioService = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);

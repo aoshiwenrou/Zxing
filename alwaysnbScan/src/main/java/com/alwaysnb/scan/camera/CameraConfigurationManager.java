@@ -26,7 +26,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.alwaysnb.scan.FuncSwitcher;
+import com.alwaysnb.scan.CaptureSwitcher;
 import com.alwaysnb.scan.camera.open.CameraFacing;
 import com.alwaysnb.scan.camera.open.OpenCamera;
 
@@ -159,18 +159,18 @@ final class CameraConfigurationManager {
         initializeTorch(parameters, prefs, safeMode);
 
         CameraConfigurationUtils.setFocus(parameters,
-                FuncSwitcher.AUTO_FOCUS, FuncSwitcher.DISABLE_CONTINUOUS_FOCUS, safeMode);
+                CaptureSwitcher.get().isAutoFocus(), CaptureSwitcher.get().isDisableContinuousFocus(), safeMode);
 
         if (!safeMode) {
-            if (FuncSwitcher.INVERT_SCAN) {
+            if (CaptureSwitcher.get().isInvertScan()) {
                 CameraConfigurationUtils.setInvertColor(parameters);
             }
 
-            if (!FuncSwitcher.DISABLE_BARCODE_SCENE_MODE) {
+            if (!CaptureSwitcher.get().isDisableBarcodeSceneMode()) {
                 CameraConfigurationUtils.setBarcodeSceneMode(parameters);
             }
 
-            if (!FuncSwitcher.DISABLE_METERING) {
+            if (!CaptureSwitcher.get().isDisableMetering()) {
                 CameraConfigurationUtils.setVideoStabilization(parameters);
                 CameraConfigurationUtils.setFocusArea(parameters);
                 CameraConfigurationUtils.setMetering(parameters);
