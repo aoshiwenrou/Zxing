@@ -40,17 +40,19 @@ final class DecodeThread extends Thread {
 
     private final DecodeHandler.DecodeCallback decodeCallback;
     private final Map<DecodeHintType, Object> hints;
+    private final boolean isNeedRotate;
     private Handler handler;
     private final CountDownLatch handlerInitLatch;
 
     DecodeThread(Collection<BarcodeFormat> decodeFormats,
             Map<DecodeHintType, ?> baseHints,
             String characterSet,
+            boolean needRotate,
             DecodeHandler.DecodeCallback decodeCallback) {
 
         this.decodeCallback = decodeCallback;
         handlerInitLatch = new CountDownLatch(1);
-
+        isNeedRotate = needRotate;
         hints = new EnumMap<>(DecodeHintType.class);
         if (baseHints != null) {
             hints.putAll(baseHints);
@@ -98,7 +100,7 @@ final class DecodeThread extends Thread {
     @Override
     public void run() {
         Looper.prepare();
-        handler = new DecodeHandler(decodeCallback, hints);
+        handler = new DecodeHandler(decodeCallback, hints, isNeedRotate);
         handlerInitLatch.countDown();
         Looper.loop();
     }
