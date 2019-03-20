@@ -82,7 +82,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         // off screen.
         cameraManager = new CameraManager(getApplication());
 
-        viewfinderView = (ViewfinderView) findViewById(R.id.viewfinder_view);
+        viewfinderView = getViewfinderView();
         viewfinderView.setCameraManager(cameraManager);
 
         handler = null;
@@ -96,7 +96,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         decodeFormats = null;
         characterSet = null;
 
-        SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+        SurfaceView surfaceView = getSurfaceView();
         SurfaceHolder surfaceHolder = surfaceView.getHolder();
         if (hasSurface) {
             // The activity was paused but not stopped, so the surface still exists. Therefore
@@ -119,7 +119,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         cameraManager.closeDriver();
         //historyManager = null; // Keep for onActivityResult
         if (!hasSurface) {
-            SurfaceView surfaceView = (SurfaceView) findViewById(R.id.preview_view);
+            SurfaceView surfaceView = getSurfaceView();
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
@@ -236,6 +236,10 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
         viewfinderView.setVisibility(View.VISIBLE);
     }
 
+    public SurfaceView getSurfaceView() {
+        return (SurfaceView) findViewById(R.id.preview_view);
+    }
+
     @Override
     public PlanarYUVLuminanceSource buildLuminanceSource(byte[] data, int width, int height) {
         return cameraManager.buildLuminanceSource(data, width, height);
@@ -243,7 +247,7 @@ public class CaptureActivity extends Activity implements SurfaceHolder.Callback,
 
     @Override
     public ViewfinderView getViewfinderView() {
-        return viewfinderView;
+        return (ViewfinderView) findViewById(R.id.viewfinder_view);
     }
 
     @Override
