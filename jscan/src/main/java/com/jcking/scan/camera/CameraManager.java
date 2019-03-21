@@ -327,8 +327,9 @@ public final class CameraManager {
             }else{
                 boolean isCameraPortrait = cameraResolution.x < cameraResolution.y;
                 if (isCameraPortrait != isScreenPortrait) {
-                    //TODO 这里是第一种转换垂直的方法，这种的话，不需要在DecodeHandler中再进行旋转，加快了速度。但是缺点是不能进行垂直方向的一维码扫描。所以如果只是进行二维码扫描，可以使用这种。后期会根据开关中的配置，判断有没有支持一维码，来自动进行选择
-                    //坐标转换，将向左横屏摄像头坐标转换为垂直屏幕时的坐标
+                    // 这里是第一种转换垂直的方法，这种的话，不需要在DecodeHandler中再进行旋转，加快了速度。
+                    // 但是缺点是不能进行垂直方向的一维码扫描。所以如果只是进行二维码扫描，可以使用这种。
+                    // 坐标转换，将向左横屏摄像头坐标转换为垂直屏幕时的坐标
                     screenResolution = new Point(screenResolution.y, screenResolution.x);
                     rect.left = rect.left * cameraResolution.x / screenResolution.x;
                     rect.right = rect.right * cameraResolution.x / screenResolution.x;

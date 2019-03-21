@@ -265,4 +265,8 @@ public class CaptureSwitcher {
     public boolean isDisableDecodeBitmap() {
         return disableDecodeBitmap;
     }
+
+    public void setDisableDecodeBitmap(boolean disableDecodeBitmap) {
+        this.disableDecodeBitmap = disableDecodeBitmap;
+    }
 }

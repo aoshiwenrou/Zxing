@@ -61,5 +61,13 @@ public class DemoActivity extends Activity {
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.btn_2_v_nob).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DemoActivity.this, V2DNOBActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }

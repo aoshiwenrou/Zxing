@@ -32,5 +32,9 @@
             android:name=".V2DActivity"
             android:screenOrientation="portrait"
             android:theme="@style/CaptureTheme" />
+        <activity
+            android:name=".V2DNOBActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/CaptureTheme" />
     </application>
 </manifest>
