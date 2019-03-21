@@ -16,12 +16,28 @@
 
 # 目录结构说明
 
-模块名称|说明
---|:--:|--:
- app |Zxing官方源码，可直接运行，体验强大的扫码功能
- zxingCore | Zxing官方扫码核心库，我已经生成了jar包   
- jscan|  基于zxing进行功能剥离之后的库，我已经对一些功能进行了优化
- demo|jscan的demo模块，我写了一些简单的demo，你可以作为参考
+<table>
+    <tr>
+        <th>模块名称</th>
+        <th>说明</th>
+    </tr>
+    <tr>
+        <th>app</th>
+        <th>Zxing官方源码，可直接运行，体验强大的扫码功能</th>
+    </tr>
+    <tr>
+        <th>zxingCore</th>
+        <th>Zxing官方扫码核心库，我已经生成了jar包</th>
+    </tr>
+    <tr>
+        <th>jscan</th>
+        <th>基于zxing进行功能剥离之后的库，我已经对一些功能进行了优化</th>
+    </tr>
+    <tr>
+        <th>demo</th>
+        <th>jscan的demo模块，我写了一些简单的demo，你可以作为参考</th>
+    </tr>
+</table>
 
 
 
