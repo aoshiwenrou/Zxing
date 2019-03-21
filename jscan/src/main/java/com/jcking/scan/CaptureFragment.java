@@ -16,11 +16,13 @@
 
 package com.jcking.scan;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.app.Fragment;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.SurfaceHolder;
@@ -35,9 +37,14 @@ import com.jcking.scan.camera.CameraManager;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.PlanarYUVLuminanceSource;
 import com.google.zxing.Result;
+import com.tbruyelle.rxpermissions2.Permission;
+import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.IOException;
 import java.util.Collection;
+
+import io.reactivex.annotations.NonNull;
+import io.reactivex.functions.Consumer;
 
 /**
  * This activity opens the camera and does the actual scanning on a background thread. It draws a
@@ -53,7 +60,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
 
     private CameraManager cameraManager;
     private CaptureActivityHandler handler;
-    private Result savedResultToShow;
     private ViewfinderView viewfinderView;
     private boolean hasSurface;
     private Collection<BarcodeFormat> decodeFormats;
@@ -81,10 +87,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
         beepManager = new BeepManager(getActivity());
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
+    protected void startCamera() {
         // CameraManager must be initialized here, not in onCreate(). This is necessary because we don't
         // want to open the camera driver and measure the screen size if we're going to show the help on
         // first launch. That led to bugs where the scanning rectangle was the wrong size and partially
@@ -117,8 +120,7 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
         }
     }
 
-    @Override
-    public void onPause() {
+    protected void stopCamera() {
         if (handler != null) {
             handler.quitSynchronously();
             handler = null;
@@ -132,6 +134,17 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
             SurfaceHolder surfaceHolder = surfaceView.getHolder();
             surfaceHolder.removeCallback(this);
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        startCamera();
+    }
+
+    @Override
+    public void onPause() {
+        stopCamera();
         super.onPause();
     }
 
@@ -139,22 +152,6 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
     public void onDestroy() {
         inactivityTimer.shutdown();
         super.onDestroy();
-    }
-
-    private void decodeOrStoreSavedBitmap(Bitmap bitmap, Result result) {
-        // Bitmap isn't used yet -- will be used soon
-        if (handler == null) {
-            savedResultToShow = result;
-        } else {
-            if (result != null) {
-                savedResultToShow = result;
-            }
-            if (savedResultToShow != null) {
-                Message message = Message.obtain(handler, R.id.decode_succeeded, savedResultToShow);
-                handler.sendMessage(message);
-            }
-            savedResultToShow = null;
-        }
     }
 
     @Override
@@ -199,7 +196,8 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
         restartPreviewAfterDelay(100);
     }
 
-    private void initCamera(SurfaceHolder surfaceHolder) {
+    @SuppressLint("CheckResult")
+    private void initCamera(final SurfaceHolder surfaceHolder) {
         if (surfaceHolder == null) {
             throw new IllegalStateException("No SurfaceHolder provided");
         }
@@ -207,22 +205,37 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
             Log.w(TAG, "initCamera() while already open -- late SurfaceView callback?");
             return;
         }
-        try {
-            cameraManager.openDriver(surfaceHolder);
-            // Creating the handler starts the preview, which can also throw a RuntimeException.
-            if (handler == null) {
-                handler = new CaptureActivityHandler(this, decodeFormats, null, characterSet, cameraManager);
+
+        RxPermissions rxPermissions = new RxPermissions(this);
+        rxPermissions.requestEach(Manifest.permission.CAMERA).subscribe(new Consumer<Permission>() {
+            @Override
+            public void accept(@NonNull Permission permission) throws Exception {
+                if (permission.granted) {
+                    try {
+                        cameraManager.openDriver(surfaceHolder);
+                        // Creating the handler starts the preview, which can also throw a RuntimeException.
+                        if (handler == null) {
+                            handler = new CaptureActivityHandler(CaptureFragment.this, decodeFormats, null, characterSet, cameraManager);
+                        }
+                    } catch (IOException ioe) {
+                        Log.w(TAG, ioe);
+                        displayFrameworkBugMessageAndExit();
+                    } catch (RuntimeException e) {
+                        // Barcode Scanner has seen crashes in the wild of this variety:
+                        // java.?lang.?RuntimeException: Fail to connect to camera service
+                        Log.w(TAG, "Unexpected error initializing camera", e);
+                        displayFrameworkBugMessageAndExit();
+                    }
+                } else if (permission.shouldShowRequestPermissionRationale) {
+                    //拒绝权限请求
+                    getActivity().finish();
+                } else {
+                    // 拒绝权限请求,并不再询问
+                    // 需要进入设置界面去设置权限
+                    displayFrameworkBugMessageAndExit();
+                }
             }
-            decodeOrStoreSavedBitmap(null, null);
-        } catch (IOException ioe) {
-            Log.w(TAG, ioe);
-            displayFrameworkBugMessageAndExit();
-        } catch (RuntimeException e) {
-            // Barcode Scanner has seen crashes in the wild of this variety:
-            // java.?lang.?RuntimeException: Fail to connect to camera service
-            Log.w(TAG, "Unexpected error initializing camera", e);
-            displayFrameworkBugMessageAndExit();
-        }
+        });
     }
 
     private void displayFrameworkBugMessageAndExit() {

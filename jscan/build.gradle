@@ -20,5 +20,8 @@ android {
 
 dependencies {
     api fileTree(include: ['*.jar'], dir: 'libs')
+    // TODO 整合到lib中的时候处理这里
+    api "com.github.tbruyelle:rxpermissions:0.10.2"
+
 //    implementation project(':zxingLib')
 }
