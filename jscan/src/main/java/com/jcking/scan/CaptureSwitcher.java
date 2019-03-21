@@ -57,38 +57,12 @@ public class CaptureSwitcher {
      * 不进行条形码场景匹配
      */
     private static final boolean DISABLE_BARCODE_SCENE_MODE = true;
+    /**
+     * 不进行bitmap转换输出。如果为true，则在handleDecode方法中无法拿到bitmap对象，但是能提高一点点效率
+     */
+    private static final boolean DISABLE_DECODE_BITMAP = false;
 
     /////////////////////////////////////////////////////////////////////////////////
-
-    private static class Holder{
-        private static CaptureSwitcher instance = new CaptureSwitcher();
-    }
-
-    private CaptureSwitcher(){}
-
-    public static CaptureSwitcher get(){
-        return Holder.instance;
-    }
-
-    /**
-     * 重置为默认设置
-     */
-    public void resetDefault(){
-        decode1dProduct = DECODE_1D_PRODUCT;
-        decode1dIndustrial = DECODE_1D_INDUSTRIAL;
-        decodeQr = DECODE_QR;
-        decodeDataMatrix = DECODE_DATA_MATRIX;
-        decodeAztec = DECODE_AZTEC;
-        decodePdf417 = DECODE_PDF417;
-        vibrate = VIBRATE;
-        playBeep = PLAY_BEEP;
-        autoFocus = AUTO_FOCUS;
-        disableContinuousFocus = DISABLE_CONTINUOUS_FOCUS;
-        invertScan = INVERT_SCAN;
-        disableMetering = DISABLE_METERING;
-        disableBarcodeSceneMode = DISABLE_BARCODE_SCENE_MODE;
-    }
-
     /////////////////////////////////////////////////////////////////////////////////
 
     /**
@@ -143,6 +117,46 @@ public class CaptureSwitcher {
      * 不进行条形码场景匹配
      */
     private boolean disableBarcodeSceneMode = DISABLE_BARCODE_SCENE_MODE;
+    /**
+     * 不进行bitmap转换输出。如果为true，则在handleDecode方法中无法拿到bitmap对象，但是能提高一点点效率
+     */
+    private boolean disableDecodeBitmap = DISABLE_DECODE_BITMAP;
+
+    /////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
+
+    private static class Holder{
+        private static CaptureSwitcher instance = new CaptureSwitcher();
+    }
+
+    private CaptureSwitcher(){}
+
+    public static CaptureSwitcher get(){
+        return Holder.instance;
+    }
+
+    /**
+     * 重置为默认设置
+     */
+    public void resetDefault(){
+        decode1dProduct = DECODE_1D_PRODUCT;
+        decode1dIndustrial = DECODE_1D_INDUSTRIAL;
+        decodeQr = DECODE_QR;
+        decodeDataMatrix = DECODE_DATA_MATRIX;
+        decodeAztec = DECODE_AZTEC;
+        decodePdf417 = DECODE_PDF417;
+        vibrate = VIBRATE;
+        playBeep = PLAY_BEEP;
+        autoFocus = AUTO_FOCUS;
+        disableContinuousFocus = DISABLE_CONTINUOUS_FOCUS;
+        invertScan = INVERT_SCAN;
+        disableMetering = DISABLE_METERING;
+        disableBarcodeSceneMode = DISABLE_BARCODE_SCENE_MODE;
+        disableDecodeBitmap = DISABLE_DECODE_BITMAP;
+    }
+
+    /////////////////////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////
 
     public boolean isDecode1dProduct() {
         return decode1dProduct;
@@ -246,5 +260,9 @@ public class CaptureSwitcher {
 
     public void setDisableBarcodeSceneMode(boolean disableBarcodeSceneMode) {
         this.disableBarcodeSceneMode = disableBarcodeSceneMode;
+    }
+
+    public boolean isDisableDecodeBitmap() {
+        return disableDecodeBitmap;
     }
 }

@@ -16,16 +16,12 @@
 
 package com.jcking.scan;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
@@ -45,13 +41,13 @@ final class DecodeHandler extends Handler {
 
     private final DecodeCallback callback;
     private final MultiFormatReader multiFormatReader;
-    private boolean isNeedRotate;
+    private boolean isScreenPortrait;
     private boolean running = true;
 
-    DecodeHandler(DecodeCallback callback, Map<DecodeHintType, Object> hints, boolean needRotate) {
+    DecodeHandler(DecodeCallback callback, Map<DecodeHintType, Object> hints, boolean isScreenPortrait) {
         multiFormatReader = new MultiFormatReader();
         multiFormatReader.setHints(hints);
-        isNeedRotate = needRotate;
+        this.isScreenPortrait = isScreenPortrait;
         this.callback = callback;
     }
 
@@ -81,7 +77,7 @@ final class DecodeHandler extends Handler {
             return;
 
         // TODO 再只进行二维码的时候，不需要翻转，翻转增加了解析时间。根据CameraManager中的TODO进行完善判断
-        if(isNeedRotate){
+        if(isScreenPortrait){
             byte[] rotatedData = new byte[data.length];
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -112,8 +108,11 @@ final class DecodeHandler extends Handler {
             // Don't log the barcode contents for security.
             long end = System.nanoTime();
             Log.d(TAG, "Found barcode in " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
-            Bundle bundle = new Bundle();
-            bundleThumbnail(source, bundle);
+            Bundle bundle = null;
+            if(!CaptureSwitcher.get().isDisableDecodeBitmap()) {
+                bundle = new Bundle();
+                bundleThumbnail(source, bundle);
+            }
             callback.onDecodeSuccess(rawResult, bundle);
         } else {
             callback.onDecodeFail();
