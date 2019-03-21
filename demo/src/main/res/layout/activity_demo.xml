@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="100dp"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_1_h"
+        android:layout_width="match_parent"
+        android:text="有一维码，横屏"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_1_v"
+        android:layout_width="match_parent"
+        android:text="有一维码，竖屏"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_2_h"
+        android:layout_width="match_parent"
+        android:text="只有二维码，横屏"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btn_2_v"
+        android:layout_width="match_parent"
+        android:text="只有二维码，竖屏"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

@@ -16,5 +16,21 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".H1DActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/CaptureTheme" />
+        <activity
+            android:name=".H2DActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/CaptureTheme" />
+        <activity
+            android:name=".V1DActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/CaptureTheme" />
+        <activity
+            android:name=".V2DActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/CaptureTheme" />
     </application>
 </manifest>

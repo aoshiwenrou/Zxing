@@ -17,6 +17,7 @@
 package com.jcking.scan.camera;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
@@ -24,6 +25,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.SurfaceHolder;
 
+import com.jcking.scan.CaptureSwitcher;
 import com.jcking.scan.camera.open.OpenCamera;
 import com.jcking.scan.camera.open.OpenCameraInterface;
 import com.google.zxing.PlanarYUVLuminanceSource;
@@ -308,17 +310,43 @@ public final class CameraManager {
             }
 
             boolean isScreenPortrait = screenResolution.x < screenResolution.y;
-            if (isScreenPortrait) {
-                /******************** 竖屏更改1(cameraResolution.x/y互换) ************************/
-                rect.left = rect.left * cameraResolution.y / screenResolution.x;
-                rect.right = rect.right * cameraResolution.y / screenResolution.x;
-                rect.top = rect.top * cameraResolution.x / screenResolution.y;
-                rect.bottom = rect.bottom * cameraResolution.x / screenResolution.y;
-            } else {
-                rect.left = rect.left * cameraResolution.x / screenResolution.x;
-                rect.right = rect.right * cameraResolution.x / screenResolution.x;
-                rect.top = rect.top * cameraResolution.y / screenResolution.y;
-                rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+            boolean has1D = CaptureSwitcher.get().isDecode1dIndustrial() || CaptureSwitcher.get().isDecode1dProduct();
+            if(has1D){
+                if (isScreenPortrait) {
+                    //适配竖屏(cameraResolution.x/y互换)
+                    rect.left = rect.left * cameraResolution.y / screenResolution.x;
+                    rect.right = rect.right * cameraResolution.y / screenResolution.x;
+                    rect.top = rect.top * cameraResolution.x / screenResolution.y;
+                    rect.bottom = rect.bottom * cameraResolution.x / screenResolution.y;
+                } else {
+                    rect.left = rect.left * cameraResolution.x / screenResolution.x;
+                    rect.right = rect.right * cameraResolution.x / screenResolution.x;
+                    rect.top = rect.top * cameraResolution.y / screenResolution.y;
+                    rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+                }
+            }else{
+                boolean isCameraPortrait = cameraResolution.x < cameraResolution.y;
+                if (isCameraPortrait != isScreenPortrait) {
+                    //TODO 这里是第一种转换垂直的方法，这种的话，不需要在DecodeHandler中再进行旋转，加快了速度。但是缺点是不能进行垂直方向的一维码扫描。所以如果只是进行二维码扫描，可以使用这种。后期会根据开关中的配置，判断有没有支持一维码，来自动进行选择
+                    //坐标转换，将向左横屏摄像头坐标转换为垂直屏幕时的坐标
+                    screenResolution = new Point(screenResolution.y, screenResolution.x);
+                    rect.left = rect.left * cameraResolution.x / screenResolution.x;
+                    rect.right = rect.right * cameraResolution.x / screenResolution.x;
+                    rect.top = rect.top * cameraResolution.y / screenResolution.y;
+                    rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+
+                    Rect rotate = new Rect();
+                    rotate.left = rect.top;
+                    rotate.right = rotate.left + (rect.bottom - rect.top);
+                    rotate.bottom = cameraResolution.y - rect.left;
+                    rotate.top = rotate.bottom - (rect.right - rect.left);
+                    rect = rotate;
+                } else {
+                    rect.left = rect.left * cameraResolution.x / screenResolution.x;
+                    rect.right = rect.right * cameraResolution.x / screenResolution.x;
+                    rect.top = rect.top * cameraResolution.y / screenResolution.y;
+                    rect.bottom = rect.bottom * cameraResolution.y / screenResolution.y;
+                }
             }
 
             framingRectInPreview = rect;

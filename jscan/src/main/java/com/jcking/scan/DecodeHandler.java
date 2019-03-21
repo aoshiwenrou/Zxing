@@ -76,8 +76,8 @@ final class DecodeHandler extends Handler {
         if (callback == null)
             return;
 
-        // TODO 再只进行二维码的时候，不需要翻转，翻转增加了解析时间。根据CameraManager中的TODO进行完善判断
-        if(isScreenPortrait){
+        boolean has1D = CaptureSwitcher.get().isDecode1dIndustrial() || CaptureSwitcher.get().isDecode1dProduct();
+        if (has1D && isScreenPortrait) {
             byte[] rotatedData = new byte[data.length];
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
@@ -89,6 +89,20 @@ final class DecodeHandler extends Handler {
             height = tmp;
             data = rotatedData;
         }
+
+//        // TODO 再只进行二维码的时候，不需要翻转，翻转增加了解析时间。根据CameraManager中的TODO进行完善判断
+//        if (isScreenPortrait) {
+//            byte[] rotatedData = new byte[data.length];
+//            for (int y = 0; y < height; y++) {
+//                for (int x = 0; x < width; x++) {
+//                    rotatedData[x * height + height - y - 1] = data[x + y * width];
+//                }
+//            }
+//            int tmp = width; // Here we are swapping, that's the difference to #11
+//            width = height;
+//            height = tmp;
+//            data = rotatedData;
+//        }
 
         long start = System.nanoTime();
         Result rawResult = null;
@@ -109,7 +123,7 @@ final class DecodeHandler extends Handler {
             long end = System.nanoTime();
             Log.d(TAG, "Found barcode in " + TimeUnit.NANOSECONDS.toMillis(end - start) + " ms");
             Bundle bundle = null;
-            if(!CaptureSwitcher.get().isDisableDecodeBitmap()) {
+            if (!CaptureSwitcher.get().isDisableDecodeBitmap()) {
                 bundle = new Bundle();
                 bundleThumbnail(source, bundle);
             }
