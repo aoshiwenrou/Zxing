@@ -133,15 +133,15 @@ public class CaptureActivity extends FragmentActivity implements SurfaceHolder.C
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
         startCamera();
     }
 
     @Override
-    protected void onPause() {
+    protected void onStop() {
         stopCamera();
-        super.onPause();
+        super.onStop();
     }
 
     @Override

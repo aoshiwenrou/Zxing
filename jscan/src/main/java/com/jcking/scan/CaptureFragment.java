@@ -43,7 +43,9 @@ import com.tbruyelle.rxpermissions2.RxPermissions;
 import java.io.IOException;
 import java.util.Collection;
 
+import io.reactivex.Observer;
 import io.reactivex.annotations.NonNull;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 /**
@@ -137,15 +139,15 @@ public class CaptureFragment extends Fragment implements SurfaceHolder.Callback,
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         startCamera();
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
         stopCamera();
-        super.onPause();
+        super.onStop();
     }
 
     @Override
