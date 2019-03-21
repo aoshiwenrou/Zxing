@@ -13,8 +13,9 @@
 版本说明：https://github.com/aoshiwenrou/Zxing/releases
 
 
----
+
 # 目录结构说明
+
 模块名称|说明
 --|:--:|--:
  app |Zxing官方源码，可直接运行，体验强大的扫码功能
@@ -23,9 +24,8 @@
  demo|jscan的demo模块，我写了一些简单的demo，你可以作为参考
 
 
----
-# 使用方法
 
+# 使用方法
 
 1.添加依赖
 --------------------
@@ -220,7 +220,9 @@ public class CustomFragment extends CaptureFragment {
 }
 ```
 
+
 # 参考
+
 - zxing/zxing : https://github.com/zxing/zxing
 - yuzhiqiang1993/zxing ： https://github.com/yuzhiqiang1993/zxing
 - tbruyelle/RxPermissions : https://github.com/tbruyelle/RxPermissions
