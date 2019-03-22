@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Zxing.iml" filepath="$PROJECT_DIR$/Zxing.iml" />
-      <module fileurl="file://$PROJECT_DIR$/alwaysnbScan/alwaysnbScan.iml" filepath="$PROJECT_DIR$/alwaysnbScan/alwaysnbScan.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo/demo.iml" filepath="$PROJECT_DIR$/demo/demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/jscan/jscan.iml" filepath="$PROJECT_DIR$/jscan/jscan.iml" />
